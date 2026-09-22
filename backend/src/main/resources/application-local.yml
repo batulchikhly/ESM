@@ -1,0 +1,11 @@
+spring:
+  config:
+    activate:
+      on-profile: local
+
+server:
+  port: ${SERVER_PORT:8080}
+
+logging:
+  level:
+    com.acme.salarymanagement: INFO
