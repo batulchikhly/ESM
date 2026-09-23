@@ -1,6 +1,7 @@
 package com.acme.salarymanagement.repository;
 
 import com.acme.salarymanagement.model.Employee;
+import com.acme.salarymanagement.model.EmploymentStatus;
 import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
@@ -14,4 +15,6 @@ public interface EmployeeRepository extends JpaRepository<Employee, UUID>, JpaSp
 	boolean existsByEmployeeCodeIgnoreCaseAndIdNot(String employeeCode, UUID id);
 
 	boolean existsByEmailIgnoreCaseAndIdNot(String email, UUID id);
+
+	long countByEmploymentStatus(EmploymentStatus employmentStatus);
 }

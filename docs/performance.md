@@ -29,7 +29,7 @@
 
 ## Dashboard aggregation
 
-Use database-side grouping on the current effective salary record. Raw statistics are grouped by currency because monetary amounts are not comparable across currencies. If normalized reporting is requested, join the versioned static FX table and calculate `amount * rate` inside the query, returning the rate date and reporting currency. Never sum mixed raw currencies.
+Use database-side grouping on the current effective salary record. The dashboard implementation uses correlated `NOT EXISTS` latest-effective-date predicates and JPA aggregate projections, so it does not load employees or salaries into Java. Raw statistics are grouped by currency because monetary amounts are not comparable across currencies. Normalized FX reporting remains deferred until the versioned static FX table is added; the current endpoints never sum mixed raw currencies.
 
 Salary-band definitions should be stable configuration, for example `0-49,999`, `50,000-99,999`, and `100,000+` in a stated currency context. Bands across currencies require normalization and must be labeled as reference figures. If the bands are intended to compare local salaries, calculate them separately per currency.
 

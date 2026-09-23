@@ -161,6 +161,19 @@ Protected employee, salary, and dashboard APIs require a Bearer JWT. Login is av
 
 The demo user is created only when the deterministic seed is enabled. It is intended for local development and must not be reused in production. JWT signing secrets and expiration are read from `JWT_SECRET` and `JWT_EXPIRATION`; passwords are stored as BCrypt hashes.
 
+## Dashboard API
+
+Dashboard endpoints require the HR Manager Bearer JWT and aggregate current salary records in the database:
+
+```text
+GET /api/dashboard/summary
+GET /api/dashboard/by-country
+GET /api/dashboard/by-department
+GET /api/dashboard/salary-bands
+```
+
+Raw salary statistics stay grouped by currency. Salary bands are local-currency bands (`UNDER_50000`, `50000_TO_99999`, and `100000_OR_MORE`); cross-currency normalized reporting is intentionally deferred until static FX reference data is introduced.
+
 ## Current scope
 
 This phase establishes the Spring Boot runtime, environment-based configuration, Flyway/JPA/PostgreSQL wiring, validation and error foundations, CORS, stateless security scaffolding, employee APIs, salary history, and audit transactions. Dashboard logic, JWT authentication business logic, and the React frontend remain deferred.
