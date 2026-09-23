@@ -92,7 +92,7 @@ Every page defines loading, empty, error, and success states. Tables use stable 
 Use package-by-feature with internal layers:
 
 ```text
-com.acme.esm
+com.acme.salarymanagement
 ├── auth/
 │   ├── AuthController, AuthService, UserRepository
 │   ├── LoginRequest, LoginResponse, AuthUserDto
@@ -152,7 +152,6 @@ PostgreSQL is the system of record. Flyway owns all schema changes. IDs use UUID
   - `amount NUMERIC(19,4) NOT NULL CHECK (amount >= 0)`
   - `currency CHAR(3) NOT NULL` (validated against supported ISO codes)
   - `effective_from DATE NOT NULL`
-  - `effective_to DATE NULL`
   - `created_by UUID NOT NULL REFERENCES users(id)`
   - `created_at TIMESTAMPTZ NOT NULL`
   - `UNIQUE (employee_id, effective_from)`
@@ -171,7 +170,7 @@ PostgreSQL is the system of record. Flyway owns all schema changes. IDs use UUID
   - `as_of_date DATE NOT NULL`
   - `PRIMARY KEY (base_currency, quote_currency, as_of_date)`
 
-The salary table should also enforce non-overlapping effective ranges. The service sets the prior record's `effective_to` to the day before a new record starts. A PostgreSQL exclusion constraint using `daterange(effective_from, COALESCE(effective_to + 1, 'infinity'::date), '[)')` and `employee_id WITH =` is recommended after enabling `btree_gist`; the service lock remains necessary for friendly conflict handling.
+Salary history uses point-in-time records rather than stored date ranges. `UNIQUE (employee_id, effective_from)` prevents duplicate effective dates; because each record represents a point, overlapping periods cannot be stored. The service selects the latest record with `effective_from <= asOfDate`, while future-dated records remain scheduled. The service should lock the employee's salary rows during updates so concurrent changes produce a clear `409 Conflict` rather than an ambiguous history.
 
 Indexes:
 
@@ -213,7 +212,6 @@ erDiagram
         numeric amount
         char currency
         date effective_from
-        date effective_to
         uuid created_by FK
     }
     AUDIT_LOGS {
@@ -229,7 +227,7 @@ erDiagram
 
 ## 5. Salary History and Consistency
 
-A salary update inserts a new immutable `salary_records` row; it never overwrites the old amount. A record is current when its effective date is the latest date on or before the reporting date and its range contains that date. Future-dated records remain visible as scheduled changes but do not become current early.
+A salary update inserts a new immutable `salary_records` row; it never overwrites the old amount. A record is current when its `effective_from` is the latest date on or before the reporting date. Future-dated records remain visible as scheduled changes but do not become current early. Duplicate effective dates are rejected by the database constraint.
 
 `SalaryService.updateSalary` runs in one database transaction:
 
