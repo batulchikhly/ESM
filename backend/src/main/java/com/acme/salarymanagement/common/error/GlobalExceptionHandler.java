@@ -5,6 +5,7 @@ import jakarta.validation.ConstraintViolationException;
 import com.acme.salarymanagement.exception.DuplicateEmployeeException;
 import com.acme.salarymanagement.exception.EmployeeNotFoundException;
 import com.acme.salarymanagement.exception.EmployeeValidationException;
+import com.acme.salarymanagement.exception.InvalidCredentialsException;
 import com.acme.salarymanagement.exception.SalaryConflictException;
 import com.acme.salarymanagement.exception.SalaryValidationException;
 import java.time.Instant;
@@ -86,6 +87,13 @@ public class GlobalExceptionHandler {
                         SalaryConflictException exception,
                         HttpServletRequest request) {
                 return response(HttpStatus.CONFLICT, "SALARY_CONFLICT", exception.getMessage(), List.of(), request);
+        }
+
+        @ExceptionHandler(InvalidCredentialsException.class)
+        public ResponseEntity<ApiError> handleInvalidCredentials(
+                        InvalidCredentialsException exception,
+                        HttpServletRequest request) {
+                return response(HttpStatus.UNAUTHORIZED, "INVALID_CREDENTIALS", exception.getMessage(), List.of(), request);
         }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)

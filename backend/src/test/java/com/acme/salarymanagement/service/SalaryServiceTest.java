@@ -31,6 +31,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @ExtendWith(MockitoExtension.class)
 class SalaryServiceTest {
@@ -43,6 +44,8 @@ class SalaryServiceTest {
     private AuditLogRepository auditLogRepository;
     @Mock
     private UserRepository userRepository;
+        @Mock
+        private PasswordEncoder passwordEncoder;
 
     private SalaryService salaryService;
     private UUID employeeId;
@@ -51,7 +54,8 @@ class SalaryServiceTest {
 
     @BeforeEach
     void setUp() {
-        salaryService = new SalaryService(employeeRepository, salaryRecordRepository, auditLogRepository, userRepository);
+        salaryService = new SalaryService(
+                employeeRepository, salaryRecordRepository, auditLogRepository, userRepository, passwordEncoder);
         employeeId = UUID.randomUUID();
         employee = Employee.seedEmployee("EMP00001", "Test", "Employee", "employee@example.test", "US",
                 "Engineering", "Software Engineer", EmploymentStatus.ACTIVE, Instant.parse("2026-01-01T00:00:00Z"));

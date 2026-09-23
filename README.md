@@ -19,7 +19,7 @@ Copy-Item .env.example .env
 $env:DB_URL = "jdbc:postgresql://localhost:5432/salarymanagement"
 $env:DB_USERNAME = "postgres"
 $env:DB_PASSWORD = "postgres"
-$env:JWT_SECRET = "replace-with-a-long-random-secret-for-local-development"
+$env:JWT_SECRET = "acme-local-jwt-secret-change-before-production-2026-32-bytes-min"
 $env:SPRING_PROFILES_ACTIVE = "local"
 ```
 
@@ -146,7 +146,20 @@ Example request:
 }
 ```
 
-The current salary is the latest record whose effective date is on or before today. Duplicate effective dates return `409 Conflict`. Until JWT authentication is implemented, salary changes use the local `system@example.test` HR user as the audit actor.
+The current salary is the latest record whose effective date is on or before today. Duplicate effective dates return `409 Conflict`. Until authenticated actor propagation is added to the salary service, salary changes use the local `system@example.test` HR user as the audit actor.
+
+## Authentication
+
+Protected employee, salary, and dashboard APIs require a Bearer JWT. Login is available at `POST /api/auth/login`:
+
+```json
+{
+  "email": "seed-admin@example.test",
+  "password": "DemoPassword123!"
+}
+```
+
+The demo user is created only when the deterministic seed is enabled. It is intended for local development and must not be reused in production. JWT signing secrets and expiration are read from `JWT_SECRET` and `JWT_EXPIRATION`; passwords are stored as BCrypt hashes.
 
 ## Current scope
 

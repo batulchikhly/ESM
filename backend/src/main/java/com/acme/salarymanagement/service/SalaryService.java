@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,22 +33,25 @@ public class SalaryService {
 
     private static final Set<String> SUPPORTED_CURRENCIES = Set.of("USD", "EUR", "GBP", "INR", "SGD", "AUD");
     private static final String SYSTEM_USER_EMAIL = "system@example.test";
-    private static final String SYSTEM_PASSWORD_HASH = "{noop}not-for-authentication";
+    private static final String SYSTEM_PASSWORD = "internal-system-user-not-for-login";
 
     private final EmployeeRepository employeeRepository;
     private final SalaryRecordRepository salaryRecordRepository;
     private final AuditLogRepository auditLogRepository;
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     public SalaryService(
             EmployeeRepository employeeRepository,
             SalaryRecordRepository salaryRecordRepository,
             AuditLogRepository auditLogRepository,
-            UserRepository userRepository) {
+            UserRepository userRepository,
+            PasswordEncoder passwordEncoder) {
         this.employeeRepository = employeeRepository;
         this.salaryRecordRepository = salaryRecordRepository;
         this.auditLogRepository = auditLogRepository;
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Transactional
@@ -117,7 +121,7 @@ public class SalaryService {
     private User systemUser(Instant timestamp) {
         return userRepository.findByEmailIgnoreCase(SYSTEM_USER_EMAIL)
                 .orElseGet(() -> userRepository.save(User.seedUser(
-                        SYSTEM_USER_EMAIL, SYSTEM_PASSWORD_HASH, UserRole.HR_MANAGER, timestamp)));
+                    SYSTEM_USER_EMAIL, passwordEncoder.encode(SYSTEM_PASSWORD), UserRole.HR_MANAGER, timestamp)));
     }
 
     private String value(SalaryRecord record) {

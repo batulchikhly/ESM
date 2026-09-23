@@ -28,6 +28,7 @@ import java.util.stream.Stream;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,19 +37,22 @@ public class EmployeeService {
 
     private static final Set<String> SUPPORTED_CURRENCIES = Set.of("USD", "EUR", "GBP", "INR", "SGD", "AUD");
     private static final String SYSTEM_USER_EMAIL = "system@example.test";
-    private static final String SYSTEM_PASSWORD_HASH = "{noop}not-for-authentication";
+    private static final String SYSTEM_PASSWORD = "internal-system-user-not-for-login";
 
     private final EmployeeRepository employeeRepository;
     private final SalaryRecordRepository salaryRecordRepository;
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     public EmployeeService(
             EmployeeRepository employeeRepository,
             SalaryRecordRepository salaryRecordRepository,
-            UserRepository userRepository) {
+            UserRepository userRepository,
+            PasswordEncoder passwordEncoder) {
         this.employeeRepository = employeeRepository;
         this.salaryRecordRepository = salaryRecordRepository;
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Transactional(readOnly = true)
@@ -172,7 +176,7 @@ public class EmployeeService {
     private User systemUser() {
         return userRepository.findByEmailIgnoreCase(SYSTEM_USER_EMAIL)
                 .orElseGet(() -> userRepository.save(User.seedUser(
-                        SYSTEM_USER_EMAIL, SYSTEM_PASSWORD_HASH, UserRole.HR_MANAGER, Instant.now())));
+                    SYSTEM_USER_EMAIL, passwordEncoder.encode(SYSTEM_PASSWORD), UserRole.HR_MANAGER, Instant.now())));
     }
 
     private void validateSupportedCurrency(String currency) {

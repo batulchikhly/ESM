@@ -38,7 +38,7 @@ app:
     version: ${APP_SEED_VERSION:v1}
     employee-count: ${APP_SEED_EMPLOYEE_COUNT:10000}
   security:
-    jwt-secret: ${JWT_SECRET}
+    jwt-secret: ${JWT_SECRET:acme-local-jwt-secret-change-before-production-2026-32-bytes-minimum-key}
     jwt-expiration: ${JWT_EXPIRATION:PT15M}
   cors:
     allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:5173}
