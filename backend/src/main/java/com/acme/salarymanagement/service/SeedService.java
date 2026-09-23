@@ -1,12 +1,17 @@
-package com.acme.salarymanagement.seed;
+package com.acme.salarymanagement.service;
 
-import com.acme.salarymanagement.auth.User;
-import com.acme.salarymanagement.auth.UserRepository;
-import com.acme.salarymanagement.auth.UserRole;
-import com.acme.salarymanagement.employee.Employee;
-import com.acme.salarymanagement.employee.EmployeeRepository;
-import com.acme.salarymanagement.salary.SalaryRecord;
-import com.acme.salarymanagement.salary.SalaryRecordRepository;
+import com.acme.salarymanagement.model.Employee;
+import com.acme.salarymanagement.model.SalaryRecord;
+import com.acme.salarymanagement.model.User;
+import com.acme.salarymanagement.model.UserRole;
+import com.acme.salarymanagement.model.SeedRun;
+import com.acme.salarymanagement.repository.EmployeeRepository;
+import com.acme.salarymanagement.repository.SalaryRecordRepository;
+import com.acme.salarymanagement.repository.SeedRunRepository;
+import com.acme.salarymanagement.repository.UserRepository;
+import com.acme.salarymanagement.seed.SeedDataGenerator;
+import com.acme.salarymanagement.seed.SeedEmployeeData;
+import com.acme.salarymanagement.seed.SeedProperties;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.List;

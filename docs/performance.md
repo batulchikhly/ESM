@@ -14,6 +14,7 @@
 ## API and query design
 
 - Apply `LIMIT/OFFSET` or a bounded page request for the directory, with a maximum page size such as 100. Offset pagination is adequate at this scale; keyset pagination can be introduced later if deep-page performance becomes a measured problem.
+- The employee API uses a JPA specification with a correlated `EXISTS` query for the latest effective salary when currency or salary filters are supplied. The response enriches only the returned page with one batched salary query, avoiding N+1 loading.
 - Allowlist sortable columns and build parameterized predicates through Spring Data specifications or explicit repository queries.
 - Return summary DTOs for the directory rather than full entities, audit metadata, or unneeded fields.
 - Fetch current salary through a projection/query designed for the list, not by loading each employee and lazily traversing salary records.

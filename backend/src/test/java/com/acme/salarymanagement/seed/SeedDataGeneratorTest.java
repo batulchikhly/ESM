@@ -27,7 +27,7 @@ class SeedDataGeneratorTest {
         assertThat(first).extracting(SeedEmployeeData::currency)
                 .contains("INR", "USD", "GBP", "EUR", "SGD", "AUD");
         assertThat(first).extracting(SeedEmployeeData::employmentStatus)
-                .contains(com.acme.salarymanagement.employee.EmploymentStatus.ACTIVE,
-                        com.acme.salarymanagement.employee.EmploymentStatus.INACTIVE);
+                .contains(com.acme.salarymanagement.model.EmploymentStatus.ACTIVE,
+                        com.acme.salarymanagement.model.EmploymentStatus.INACTIVE);
     }
 }

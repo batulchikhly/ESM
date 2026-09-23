@@ -1,4 +1,4 @@
-package com.acme.salarymanagement.auth;
+package com.acme.salarymanagement.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

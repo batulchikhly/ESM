@@ -1,5 +1,6 @@
-package com.acme.salarymanagement.audit;
+package com.acme.salarymanagement.repository;
 
+import com.acme.salarymanagement.model.AuditLog;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;

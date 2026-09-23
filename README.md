@@ -79,6 +79,56 @@ JOIN salary_records s ON s.employee_id = e.id;
 
 Each query should return `10000` for a clean seeded database.
 
+## Employee API
+
+Employee endpoints are currently open for local development until the authentication phase adds JWT protection. The security boundary is already isolated in `SecurityConfig` and should be changed to require the HR Manager role when authentication is implemented.
+
+List employees with database-side pagination, filtering, search, and allowlisted sorting:
+
+```text
+GET /api/employees?page=0&size=25&sort=lastName,asc&search=employee&country=US&department=Engineering&status=ACTIVE&currency=USD&minSalary=50000&maxSalary=180000
+```
+
+The response contains only the requested page:
+
+```json
+{
+  "content": [
+    {
+      "id": "00000000-0000-0000-0000-000000000001",
+      "employeeCode": "EMP00001",
+      "firstName": "Maya",
+      "lastName": "Bennett",
+      "email": "employee00001@example.test",
+      "country": "US",
+      "department": "Engineering",
+      "jobTitle": "Software Engineer",
+      "employmentStatus": "ACTIVE",
+      "currentSalary": {
+        "annualSalary": 100000,
+        "currency": "USD",
+        "effectiveFrom": "2025-01-01"
+      }
+    }
+  ],
+  "page": 0,
+  "size": 25,
+  "totalElements": 10000,
+  "totalPages": 400
+}
+```
+
+Search is case-insensitive partial matching across employee code, first name, last name, and email. Salary filters apply to the latest salary record effective on or before today; future-dated salary records are excluded from current-salary filtering. Supported sort fields are `employeeCode`, `firstName`, `lastName`, `country`, `department`, `employmentStatus`, and `createdAt`, with `asc` or `desc` direction.
+
+Other endpoints are:
+
+```text
+GET   /api/employees/{id}
+POST  /api/employees
+PUT   /api/employees/{id}
+PATCH /api/employees/{id}/deactivate
+```
+
 ## Current scope
 
 This phase establishes the Spring Boot runtime, environment-based configuration, Flyway/JPA/PostgreSQL wiring, validation and error foundations, CORS, stateless security scaffolding, and application-startup testing. Employee CRUD, salary management, dashboard logic, and authentication business logic are intentionally deferred to later phases.

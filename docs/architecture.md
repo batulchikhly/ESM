@@ -89,38 +89,24 @@ Every page defines loading, empty, error, and success states. Tables use stable 
 
 ## 3. Spring Boot Modular Monolith
 
-Use package-by-feature with internal layers:
+Use category-based packages with clear technical responsibilities:
 
 ```text
 com.acme.salarymanagement
-├── auth/
-│   ├── AuthController, AuthService, UserRepository
-│   ├── LoginRequest, LoginResponse, AuthUserDto
-│   └── JwtAuthenticationFilter, PasswordConfig
-├── employees/
-│   ├── EmployeeController, EmployeeService, EmployeeRepository
-│   ├── Employee, EmployeeDto, EmployeeRequest
-│   └── EmployeeSpecifications
-├── salary/
-│   ├── SalaryController, SalaryService, SalaryRecordRepository
-│   ├── SalaryRecord, SalaryDto, SalaryUpdateRequest
-│   └── SalaryHistoryPolicy
-├── dashboard/
-│   ├── DashboardController, DashboardService
-│   ├── projection/query repositories, response DTOs
-│   └── salary-band and FX normalization policy
-├── audit/
-│   ├── AuditLog, AuditLogRepository, AuditService
-│   └── AuditDto
-├── common/
-│   ├── ApiError, PageResponse, validation, exception handling
-│   └── Clock and correlation-id support
-└── config/
-    ├── SecurityConfig, JacksonConfig, CorsConfig
-    └── OpenApiConfig
+├── controller/                # HTTP controllers
+├── dto/                       # request and response contracts
+├── model/                     # JPA entities and domain enums
+├── repository/                # Spring Data repositories and specifications
+├── service/                   # transactional business services
+├── exception/                 # feature and application exceptions
+├── seed/                      # deterministic seed generator and runner
+├── common/error/              # shared API error handling
+└── config/                    # infrastructure configuration
 ```
 
-Controllers translate HTTP requests and responses only. Services own business rules and transaction boundaries. Repositories perform persistence and projections. DTOs are the REST contract; JPA entities never cross the controller boundary. Bean Validation handles shape and basic constraints, while services handle cross-record rules such as salary-date conflicts and duplicate employee identity.
+Controllers translate HTTP requests and responses only. Services own business rules and transaction boundaries. Repositories perform persistence and projections. DTOs are the REST contract; JPA entities never cross the controller boundary. Bean Validation handles shape and basic constraints, while services handle cross-record rules such as salary-date conflicts and duplicate employee identity. Category-based packaging is a navigation convention, not permission to create generic base classes or mix unrelated business logic.
+
+Phase 6 implements the employee feature across `controller/`, `dto/`, `model/`, `repository/`, and `service/` with a `JpaSpecificationExecutor` for database-side search, filters, sorting, and pagination. Current-salary filters use a correlated latest-effective-date subquery; page responses enrich only the returned employees with one batched salary query. Employee routes are temporarily permitted without authentication so the API can be exercised before the separate JWT phase; the security chain remains the integration point for replacing that with HR Manager authorization.
 
 A `@RestControllerAdvice` maps validation failures, not-found errors, conflicts, authentication failures, authorization failures, and unexpected errors to one stable error format. Unexpected errors are logged with a correlation ID but do not expose stack traces or salary data.
 

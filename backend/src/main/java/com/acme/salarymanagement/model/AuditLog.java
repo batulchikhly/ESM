@@ -1,7 +1,5 @@
-package com.acme.salarymanagement.audit;
+package com.acme.salarymanagement.model;
 
-import com.acme.salarymanagement.auth.User;
-import com.acme.salarymanagement.employee.Employee;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;

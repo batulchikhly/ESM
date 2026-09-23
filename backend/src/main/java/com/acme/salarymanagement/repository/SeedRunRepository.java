@@ -1,5 +1,6 @@
-package com.acme.salarymanagement.seed;
+package com.acme.salarymanagement.repository;
 
+import com.acme.salarymanagement.model.SeedRun;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;

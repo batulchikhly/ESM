@@ -1,6 +1,6 @@
 package com.acme.salarymanagement.seed;
 
-import com.acme.salarymanagement.employee.EmploymentStatus;
+import com.acme.salarymanagement.model.EmploymentStatus;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;

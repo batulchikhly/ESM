@@ -1,9 +1,11 @@
-package com.acme.salarymanagement.seed;
+package com.acme.salarymanagement.dto;
 
 import com.acme.salarymanagement.model.EmploymentStatus;
-import java.math.BigDecimal;
+import java.time.Instant;
+import java.util.UUID;
 
-public record SeedEmployeeData(
+public record EmployeeResponse(
+        UUID id,
         String employeeCode,
         String firstName,
         String lastName,
@@ -12,6 +14,7 @@ public record SeedEmployeeData(
         String department,
         String jobTitle,
         EmploymentStatus employmentStatus,
-        BigDecimal annualSalary,
-        String currency) {
+        Instant createdAt,
+        Instant updatedAt,
+        SalarySummary currentSalary) {
 }

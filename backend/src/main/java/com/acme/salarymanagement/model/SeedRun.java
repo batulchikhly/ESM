@@ -1,4 +1,4 @@
-package com.acme.salarymanagement.seed;
+package com.acme.salarymanagement.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

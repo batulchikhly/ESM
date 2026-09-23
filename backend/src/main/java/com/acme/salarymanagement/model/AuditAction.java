@@ -1,4 +1,4 @@
-package com.acme.salarymanagement.audit;
+package com.acme.salarymanagement.model;
 
 public enum AuditAction {
     SALARY_CREATED,

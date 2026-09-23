@@ -1,4 +1,4 @@
-package com.acme.salarymanagement.employee;
+package com.acme.salarymanagement.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -78,6 +78,40 @@ public class Employee {
         employee.createdAt = createdAt;
         employee.updatedAt = createdAt;
         return employee;
+    }
+
+    public static Employee create(
+            String employeeCode,
+            String firstName,
+            String lastName,
+            String email,
+            String country,
+            String department,
+            String jobTitle,
+            EmploymentStatus employmentStatus) {
+        return seedEmployee(employeeCode, firstName, lastName, email, country, department, jobTitle,
+                employmentStatus, null);
+    }
+
+    public void updateProfile(
+            String firstName,
+            String lastName,
+            String email,
+            String country,
+            String department,
+            String jobTitle,
+            EmploymentStatus employmentStatus) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.country = country;
+        this.department = department;
+        this.jobTitle = jobTitle;
+        this.employmentStatus = employmentStatus;
+    }
+
+    public void deactivate() {
+        employmentStatus = EmploymentStatus.INACTIVE;
     }
 
     @PrePersist

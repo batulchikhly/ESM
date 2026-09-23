@@ -2,14 +2,21 @@ package com.acme.salarymanagement.common.error;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
+import com.acme.salarymanagement.exception.DuplicateEmployeeException;
+import com.acme.salarymanagement.exception.EmployeeNotFoundException;
+import com.acme.salarymanagement.exception.EmployeeValidationException;
 import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
+import org.springframework.web.HttpMediaTypeNotSupportedException;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -38,6 +45,53 @@ public class GlobalExceptionHandler {
                 .map(violation -> new FieldErrorDetail(violation.getPropertyPath().toString(), violation.getMessage()))
                 .toList();
         return response(HttpStatus.BAD_REQUEST, "VALIDATION_ERROR", "Request validation failed", fieldErrors,
+                request);
+    }
+
+    @ExceptionHandler(EmployeeNotFoundException.class)
+    public ResponseEntity<ApiError> handleEmployeeNotFound(
+            EmployeeNotFoundException exception,
+            HttpServletRequest request) {
+        return response(HttpStatus.NOT_FOUND, "EMPLOYEE_NOT_FOUND", exception.getMessage(), List.of(), request);
+    }
+
+    @ExceptionHandler(DuplicateEmployeeException.class)
+    public ResponseEntity<ApiError> handleDuplicateEmployee(
+            DuplicateEmployeeException exception,
+            HttpServletRequest request) {
+        return response(HttpStatus.CONFLICT, "DUPLICATE_EMPLOYEE", exception.getMessage(),
+                List.of(new FieldErrorDetail(exception.getField(), exception.getMessage())), request);
+    }
+
+    @ExceptionHandler(EmployeeValidationException.class)
+    public ResponseEntity<ApiError> handleEmployeeValidation(
+            EmployeeValidationException exception,
+            HttpServletRequest request) {
+        return response(HttpStatus.BAD_REQUEST, "VALIDATION_ERROR", exception.getMessage(),
+                List.of(new FieldErrorDetail(exception.getField(), exception.getMessage())), request);
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<ApiError> handleTypeMismatch(
+            MethodArgumentTypeMismatchException exception,
+            HttpServletRequest request) {
+        return response(HttpStatus.BAD_REQUEST, "INVALID_PARAMETER",
+                "Invalid value for parameter: " + exception.getName(), List.of(), request);
+    }
+
+    @ExceptionHandler({HttpMessageNotReadableException.class, HttpMediaTypeNotSupportedException.class})
+    public ResponseEntity<ApiError> handleUnreadableRequest(
+            Exception exception,
+            HttpServletRequest request) {
+        return response(HttpStatus.BAD_REQUEST, "INVALID_REQUEST", "Request body could not be parsed", List.of(),
+                request);
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ApiError> handleDataIntegrityViolation(
+            DataIntegrityViolationException exception,
+            HttpServletRequest request) {
+        return response(HttpStatus.CONFLICT, "DATA_CONFLICT", "The request conflicts with existing data", List.of(),
                 request);
     }
 

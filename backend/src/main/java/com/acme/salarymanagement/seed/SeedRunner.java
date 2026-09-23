@@ -1,5 +1,6 @@
 package com.acme.salarymanagement.seed;
 
+import com.acme.salarymanagement.service.SeedService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.ApplicationArguments;
