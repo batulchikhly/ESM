@@ -15,6 +15,11 @@ spring:
     locations: classpath:db/migration
 
 app:
+  seed:
+    enabled: false
+    random-seed: 20260922
+    version: v1
+    employee-count: 10000
   security:
     jwt-secret: test-secret-that-is-long-enough-for-jwt-signing
     jwt-expiration: PT15M

@@ -52,9 +52,28 @@ public class SalaryRecord {
     protected SalaryRecord() {
     }
 
+    public static SalaryRecord initialSalary(
+            Employee employee,
+            BigDecimal annualSalary,
+            String currency,
+            LocalDate effectiveFrom,
+            Instant createdAt,
+            User createdBy) {
+        SalaryRecord record = new SalaryRecord();
+        record.employee = employee;
+        record.annualSalary = annualSalary;
+        record.currency = currency;
+        record.effectiveFrom = effectiveFrom;
+        record.createdAt = createdAt;
+        record.createdBy = createdBy;
+        return record;
+    }
+
     @PrePersist
     void onCreate() {
-        createdAt = Instant.now();
+        if (createdAt == null) {
+            createdAt = Instant.now();
+        }
     }
 
     public UUID getId() {

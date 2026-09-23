@@ -45,7 +45,7 @@ At 10,000 rows, live aggregation queries are reasonable for an MVP. If measured 
 
 ## Seeding
 
-Generate deterministic data in batches using prepared inserts and a fixed random seed. Prefer database transactions sized to avoid excessive memory and transaction logs while retaining reproducibility. Verify row counts, uniqueness, salary-record counts, country/currency distribution, and rerun behavior as part of the seed test. The stable employee IDs and seed-version marker make repeated runs idempotent.
+Generate deterministic data in batches using JPA `saveAll` calls inside one transaction and a fixed random seed. Ten thousand employees plus their initial salary records are a suitable MVP batch size; the operation does not run on normal startup unless `APP_SEED_ENABLED=true`. A fixed timestamp, stable employee codes, and a `seed_runs(seed_name, seed_version)` marker make repeated runs reproducible and idempotent. The service refuses to seed when unrelated application data already exists, so it never deletes real data automatically. Verify row counts, uniqueness, salary-record counts, country/currency distribution, and rerun behavior as part of the seed test.
 
 ## Measurement plan
 

@@ -44,11 +44,26 @@ public class User {
     protected User() {
     }
 
+    public static User seedUser(String email, String passwordHash, UserRole role, Instant createdAt) {
+        User user = new User();
+        user.email = email;
+        user.passwordHash = passwordHash;
+        user.role = role;
+        user.active = true;
+        user.createdAt = createdAt;
+        user.updatedAt = createdAt;
+        return user;
+    }
+
     @PrePersist
     void onCreate() {
         Instant now = Instant.now();
-        createdAt = now;
-        updatedAt = now;
+        if (createdAt == null) {
+            createdAt = now;
+        }
+        if (updatedAt == null) {
+            updatedAt = createdAt;
+        }
     }
 
     @PreUpdate

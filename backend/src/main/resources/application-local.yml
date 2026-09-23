@@ -6,6 +6,13 @@ spring:
 server:
   port: ${SERVER_PORT:8080}
 
+app:
+  seed:
+    enabled: ${APP_SEED_ENABLED:false}
+    random-seed: ${APP_SEED_RANDOM_SEED:20260922}
+    version: ${APP_SEED_VERSION:v1}
+    employee-count: ${APP_SEED_EMPLOYEE_COUNT:10000}
+
 logging:
   level:
     com.acme.salarymanagement: INFO

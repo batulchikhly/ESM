@@ -56,11 +56,39 @@ public class Employee {
     protected Employee() {
     }
 
+    public static Employee seedEmployee(
+            String employeeCode,
+            String firstName,
+            String lastName,
+            String email,
+            String country,
+            String department,
+            String jobTitle,
+            EmploymentStatus employmentStatus,
+            Instant createdAt) {
+        Employee employee = new Employee();
+        employee.employeeCode = employeeCode;
+        employee.firstName = firstName;
+        employee.lastName = lastName;
+        employee.email = email;
+        employee.country = country;
+        employee.department = department;
+        employee.jobTitle = jobTitle;
+        employee.employmentStatus = employmentStatus;
+        employee.createdAt = createdAt;
+        employee.updatedAt = createdAt;
+        return employee;
+    }
+
     @PrePersist
     void onCreate() {
         Instant now = Instant.now();
-        createdAt = now;
-        updatedAt = now;
+        if (createdAt == null) {
+            createdAt = now;
+        }
+        if (updatedAt == null) {
+            updatedAt = createdAt;
+        }
     }
 
     @PreUpdate
