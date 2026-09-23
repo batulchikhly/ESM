@@ -5,6 +5,8 @@ import jakarta.validation.ConstraintViolationException;
 import com.acme.salarymanagement.exception.DuplicateEmployeeException;
 import com.acme.salarymanagement.exception.EmployeeNotFoundException;
 import com.acme.salarymanagement.exception.EmployeeValidationException;
+import com.acme.salarymanagement.exception.SalaryConflictException;
+import com.acme.salarymanagement.exception.SalaryValidationException;
 import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
@@ -70,6 +72,21 @@ public class GlobalExceptionHandler {
         return response(HttpStatus.BAD_REQUEST, "VALIDATION_ERROR", exception.getMessage(),
                 List.of(new FieldErrorDetail(exception.getField(), exception.getMessage())), request);
     }
+
+        @ExceptionHandler(SalaryValidationException.class)
+        public ResponseEntity<ApiError> handleSalaryValidation(
+                        SalaryValidationException exception,
+                        HttpServletRequest request) {
+                return response(HttpStatus.BAD_REQUEST, "SALARY_VALIDATION_ERROR", exception.getMessage(),
+                                List.of(new FieldErrorDetail(exception.getField(), exception.getMessage())), request);
+        }
+
+        @ExceptionHandler(SalaryConflictException.class)
+        public ResponseEntity<ApiError> handleSalaryConflict(
+                        SalaryConflictException exception,
+                        HttpServletRequest request) {
+                return response(HttpStatus.CONFLICT, "SALARY_CONFLICT", exception.getMessage(), List.of(), request);
+        }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<ApiError> handleTypeMismatch(

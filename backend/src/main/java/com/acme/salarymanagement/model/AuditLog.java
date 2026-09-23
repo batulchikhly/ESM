@@ -48,9 +48,28 @@ public class AuditLog {
     protected AuditLog() {
     }
 
+    public static AuditLog salaryChange(
+            Employee employee,
+            AuditAction action,
+            String oldValue,
+            String newValue,
+            User changedBy,
+            Instant changedAt) {
+        AuditLog auditLog = new AuditLog();
+        auditLog.employee = employee;
+        auditLog.action = action;
+        auditLog.oldValue = oldValue;
+        auditLog.newValue = newValue;
+        auditLog.changedBy = changedBy;
+        auditLog.changedAt = changedAt;
+        return auditLog;
+    }
+
     @PrePersist
     void onCreate() {
-        changedAt = Instant.now();
+        if (changedAt == null) {
+            changedAt = Instant.now();
+        }
     }
 
     public UUID getId() {

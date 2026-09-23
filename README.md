@@ -129,6 +129,25 @@ PUT   /api/employees/{id}
 PATCH /api/employees/{id}/deactivate
 ```
 
+Salary management endpoints preserve every effective-dated record and create an audit row in the same transaction:
+
+```text
+POST /api/employees/{id}/salary
+GET  /api/employees/{id}/salary-history
+```
+
+Example request:
+
+```json
+{
+  "annualSalary": 75000,
+  "currency": "USD",
+  "effectiveFrom": "2026-01-01"
+}
+```
+
+The current salary is the latest record whose effective date is on or before today. Duplicate effective dates return `409 Conflict`. Until JWT authentication is implemented, salary changes use the local `system@example.test` HR user as the audit actor.
+
 ## Current scope
 
-This phase establishes the Spring Boot runtime, environment-based configuration, Flyway/JPA/PostgreSQL wiring, validation and error foundations, CORS, stateless security scaffolding, and application-startup testing. Employee CRUD, salary management, dashboard logic, and authentication business logic are intentionally deferred to later phases.
+This phase establishes the Spring Boot runtime, environment-based configuration, Flyway/JPA/PostgreSQL wiring, validation and error foundations, CORS, stateless security scaffolding, employee APIs, salary history, and audit transactions. Dashboard logic, JWT authentication business logic, and the React frontend remain deferred.
