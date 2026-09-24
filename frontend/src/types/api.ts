@@ -95,3 +95,31 @@ export interface ApiError {
   code?: string;
   message?: string;
 }
+
+export interface EmployeeCreateRequest {
+  employeeCode: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  country: string;
+  department: string;
+  jobTitle: string;
+  employmentStatus: EmploymentStatus;
+  initialSalary: SalaryUpdateRequest;
+}
+
+export interface EmployeeUpdateRequest {
+  firstName: string;
+  lastName: string;
+  email: string;
+  country: string;
+  department: string;
+  jobTitle: string;
+  employmentStatus: EmploymentStatus;
+}
+
+export interface SalaryUpdateRequest {
+  annualSalary: number;
+  currency: string;
+  effectiveFrom: string;
+}
