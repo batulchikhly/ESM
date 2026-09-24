@@ -159,12 +159,7 @@ Protected employee, salary, and dashboard APIs require a Bearer JWT. Login is av
 }
 ```
 
-The local profile creates a development-only demo user when `APP_DEMO_USER_ENABLED=true`:
-
-- Email: `demo@test.com`
-- Password: `demo`
-
-This account is intended for local development and must not be reused in production. JWT signing secrets and expiration are read from `JWT_SECRET` and `JWT_EXPIRATION`; passwords are stored as BCrypt hashes.
+The seeded account is intended for local development and must not be reused in production. JWT signing secrets and expiration are read from `JWT_SECRET` and `JWT_EXPIRATION`; passwords are stored as BCrypt hashes.
 
 ## Frontend
 

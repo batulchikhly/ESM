@@ -7,8 +7,6 @@ server:
   port: ${SERVER_PORT:8080}
 
 app:
-  demo-user:
-    enabled: ${APP_DEMO_USER_ENABLED:true}
   seed:
     enabled: ${APP_SEED_ENABLED:false}
     random-seed: ${APP_SEED_RANDOM_SEED:20260922}

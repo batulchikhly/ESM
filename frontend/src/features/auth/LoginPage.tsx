@@ -17,8 +17,8 @@ import type { ApiError } from "../../types/api";
 export function LoginPage() {
   const { login, isLoading } = useAuth();
   const navigate = useNavigate();
-  const [email, setEmail] = useState("demo@test.com");
-  const [password, setPassword] = useState("demo");
+  const [email, setEmail] = useState("seed-admin@example.test");
+  const [password, setPassword] = useState("DemoPassword123!");
   const [error, setError] = useState("");
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
