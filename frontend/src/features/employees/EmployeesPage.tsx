@@ -8,6 +8,11 @@ import {
   Alert,
   Box,
   Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Grid,
   Card,
   CardContent,
   FormControl,
@@ -270,23 +275,24 @@ export function EmployeesPage() {
           )}
         </CardContent>
       </Card>
-      {formOpen && (
-        <EmployeeForm
-          onClose={() => setFormOpen(false)}
-          onSaved={() => {
-            setFormOpen(false);
-            clearFilters();
-          }}
-        />
-      )}
+      <EmployeeForm
+        open={formOpen}
+        onClose={() => setFormOpen(false)}
+        onSaved={() => {
+          setFormOpen(false);
+          clearFilters();
+        }}
+      />
     </Stack>
   );
 }
 
 function EmployeeForm({
+  open,
   onClose,
   onSaved,
 }: {
+  open: boolean;
   onClose: () => void;
   onSaved: () => void;
 }) {
@@ -303,34 +309,50 @@ function EmployeeForm({
     currency: "USD",
     effectiveFrom: new Date().toISOString().slice(0, 10),
   });
+
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
-  const update = (key: string, value: string) =>
-    setForm((current) => ({ ...current, [key]: value }));
+
+  const update = (key: string, value: string) => {
+    setForm((current) => ({
+      ...current,
+      [key]: value,
+    }));
+  };
+
   const submit = async (event: FormEvent) => {
     event.preventDefault();
     setError("");
+
     if (!form.annualSalary || Number(form.annualSalary) < 0) {
       setError("Enter a non-negative salary.");
       return;
     }
+
+    if (!form.effectiveFrom) {
+      setError("Enter an effective date.");
+      return;
+    }
+
     setSaving(true);
+
     try {
       await createEmployee({
-        employeeCode: form.employeeCode,
-        firstName: form.firstName,
-        lastName: form.lastName,
-        email: form.email,
-        country: form.country,
-        department: form.department,
-        jobTitle: form.jobTitle,
+        employeeCode: form.employeeCode.trim(),
+        firstName: form.firstName.trim(),
+        lastName: form.lastName.trim(),
+        email: form.email.trim(),
+        country: form.country.trim(),
+        department: form.department.trim(),
+        jobTitle: form.jobTitle.trim(),
         employmentStatus: form.employmentStatus,
         initialSalary: {
           annualSalary: Number(form.annualSalary),
-          currency: form.currency,
+          currency: form.currency.trim().toUpperCase(),
           effectiveFrom: form.effectiveFrom,
         },
       });
+
       onSaved();
     } catch {
       setError(
@@ -340,65 +362,105 @@ function EmployeeForm({
       setSaving(false);
     }
   };
+
   return (
-    <Card sx={{ p: 3 }}>
-      <Stack component="form" onSubmit={submit} spacing={2}>
-        <Typography variant="h6" fontWeight={800}>
-          Add employee
-        </Typography>
-        {error && <Alert severity="error">{error}</Alert>}
-        <Stack direction={{ xs: "column", sm: "row" }} gap={2}>
-          {(["employeeCode", "firstName", "lastName", "email"] as const).map(
-            (key) => (
+    <Dialog open={open} onClose={onClose} fullWidth maxWidth="md">
+      <DialogTitle>Add employee</DialogTitle>
+
+      <DialogContent>
+        <Stack
+          component="form"
+          id="create-employee"
+          onSubmit={submit}
+          spacing={2}
+          sx={{ pt: 1 }}
+        >
+          {error && <Alert severity="error">{error}</Alert>}
+
+          <Grid container spacing={2}>
+            {(
+              [
+                "employeeCode",
+                "firstName",
+                "lastName",
+                "email",
+                "country",
+                "department",
+                "jobTitle",
+              ] as const
+            ).map((key) => (
+              <Grid key={key} size={{ xs: 12, sm: 6 }}>
+                <TextField
+                  label={key.replace(/([A-Z])/g, " $1")}
+                  value={form[key]}
+                  onChange={(event) => update(key, event.target.value)}
+                  required
+                  fullWidth
+                />
+              </Grid>
+            ))}
+
+            <Grid size={{ xs: 12, sm: 6 }}>
               <TextField
-                key={key}
-                label={key.replace(/([A-Z])/g, " $1")}
-                value={form[key]}
-                onChange={(event) => update(key, event.target.value)}
-                required
+                label="Employment status"
+                value={form.employmentStatus}
+                disabled
                 fullWidth
               />
-            ),
-          )}
+            </Grid>
+
+            <Grid size={{ xs: 12, sm: 6 }}>
+              <TextField
+                label="Annual salary"
+                type="number"
+                value={form.annualSalary}
+                onChange={(event) => update("annualSalary", event.target.value)}
+                required
+                fullWidth
+                inputProps={{ min: 0 }}
+              />
+            </Grid>
+
+            <Grid size={{ xs: 12, sm: 6 }}>
+              <TextField
+                label="Currency"
+                value={form.currency}
+                onChange={(event) => update("currency", event.target.value)}
+                required
+                fullWidth
+                inputProps={{ maxLength: 3 }}
+              />
+            </Grid>
+
+            <Grid size={{ xs: 12, sm: 6 }}>
+              <TextField
+                label="Effective from"
+                type="date"
+                value={form.effectiveFrom}
+                onChange={(event) =>
+                  update("effectiveFrom", event.target.value)
+                }
+                required
+                fullWidth
+                InputLabelProps={{ shrink: true }}
+              />
+            </Grid>
+          </Grid>
         </Stack>
-        <Stack direction={{ xs: "column", sm: "row" }} gap={2}>
-          {(
-            [
-              "country",
-              "department",
-              "jobTitle",
-              "currency",
-              "annualSalary",
-              "effectiveFrom",
-            ] as const
-          ).map((key) => (
-            <TextField
-              key={key}
-              label={key.replace(/([A-Z])/g, " $1")}
-              type={
-                key === "annualSalary"
-                  ? "number"
-                  : key === "effectiveFrom"
-                    ? "date"
-                    : "text"
-              }
-              value={form[key]}
-              onChange={(event) => update(key, event.target.value)}
-              required
-              fullWidth
-              InputLabelProps={
-                key === "effectiveFrom" ? { shrink: true } : undefined
-              }
-            />
-          ))}
-        </Stack>
-        <Stack direction="row" justifyContent="flex-end" gap={1}>
-          <Button onClick={onClose}>Cancel</Button>
-          <Button type="submit" variant="contained" disabled={saving}>
-            {saving ? "Saving..." : "Create employee"}
-          </Button>
-        </Stack>
-      </Stack>
-    </Card>
+      </DialogContent>
+
+      <DialogActions>
+        <Button onClick={onClose}>Cancel</Button>
+
+        <Button
+          form="create-employee"
+          type="submit"
+          variant="contained"
+          disabled={saving}
+        >
+          {saving ? "Saving..." : "Create employee"}
+        </Button>
+      </DialogActions>
+    </Dialog>
   );
 }
