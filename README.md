@@ -159,7 +159,16 @@ Protected employee, salary, and dashboard APIs require a Bearer JWT. Login is av
 }
 ```
 
-The demo user is created only when the deterministic seed is enabled. It is intended for local development and must not be reused in production. JWT signing secrets and expiration are read from `JWT_SECRET` and `JWT_EXPIRATION`; passwords are stored as BCrypt hashes.
+The local profile creates a development-only demo user when `APP_DEMO_USER_ENABLED=true`:
+
+- Email: `demo@test.com`
+- Password: `demo`
+
+This account is intended for local development and must not be reused in production. JWT signing secrets and expiration are read from `JWT_SECRET` and `JWT_EXPIRATION`; passwords are stored as BCrypt hashes.
+
+## Frontend
+
+The React frontend lives in `frontend/` and uses `VITE_API_BASE_URL` for the backend API URL. See `frontend/README.md` for setup and local authentication instructions.
 
 ## Dashboard API
 

@@ -57,6 +57,11 @@ class AuthenticationIntegrationTest {
                 passwordEncoder.encode(PASSWORD),
                 UserRole.HR_MANAGER,
                 Instant.parse("2026-01-01T00:00:00Z")));
+        userRepository.saveAndFlush(User.seedUser(
+                "demo@test.com",
+                passwordEncoder.encode("demo"),
+                UserRole.HR_MANAGER,
+                Instant.parse("2026-01-01T00:00:00Z")));
     }
 
     @Test
@@ -68,6 +73,24 @@ class AuthenticationIntegrationTest {
                 .andExpect(jsonPath("$.accessToken").isNotEmpty())
                 .andExpect(jsonPath("$.tokenType").value("Bearer"))
                 .andExpect(jsonPath("$.role").value("HR_MANAGER"));
+    }
+
+    @Test
+    void demoUserUsesBcryptAndCanLogin() throws Exception {
+        User demo = userRepository.findByEmailIgnoreCase("demo@test.com").orElseThrow();
+
+        org.assertj.core.api.Assertions.assertThat(demo.getPasswordHash())
+                .isNotEqualTo("demo")
+                .startsWith("$2");
+        org.assertj.core.api.Assertions.assertThat(passwordEncoder.matches("demo", demo.getPasswordHash()))
+                .isTrue();
+
+        mockMvc.perform(post("/api/auth/login")
+                        .contentType("application/json")
+                        .content("""{"email":"demo@test.com","password":"demo"}"""))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.accessToken").isNotEmpty())
+                .andExpect(jsonPath("$.email").value("demo@test.com"));
     }
 
     @Test
