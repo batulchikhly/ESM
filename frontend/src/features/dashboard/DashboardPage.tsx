@@ -334,7 +334,7 @@ function SalaryBands({
   );
 }
 
-function DistributionCard({
+function DistributionCard<T extends CountryAnalytics | DepartmentAnalytics>({
   title,
   icon,
   rows,
@@ -343,11 +343,12 @@ function DistributionCard({
 }: {
   title: string;
   icon: ReactNode;
-  rows: Array<CountryAnalytics | DepartmentAnalytics>;
-  label: (row: CountryAnalytics | DepartmentAnalytics) => string;
+  rows: T[];
+  label: (row: T) => string;
   loading: boolean;
 }) {
   const max = Math.max(...rows.map((row) => row.employeeCount), 1);
+
   return (
     <Card>
       <CardContent sx={{ p: { xs: 2, sm: 3 } }}>
@@ -374,6 +375,7 @@ function DistributionCard({
                     {numberFormat.format(row.employeeCount)}
                   </Typography>
                 </Stack>
+
                 <LinearProgress
                   variant="determinate"
                   value={(row.employeeCount / max) * 100}

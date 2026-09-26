@@ -1,6 +1,7 @@
 package com.acme.salarymanagement.service;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -23,7 +24,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
@@ -54,7 +55,7 @@ class SalaryServiceTransactionIntegrationTest {
     @Autowired
     private DataSource dataSource;
 
-    @MockBean
+    @MockitoBean
     private AuditLogRepository auditLogRepository;
 
     private Employee employee;
@@ -88,11 +89,15 @@ class SalaryServiceTransactionIntegrationTest {
                 Integer.class,
                 employee.getId());
 
-        org.assertj.core.api.Assertions.assertThat(history)
-                .hasSize(1)
-                .first()
-                .extracting(SalaryRecord::getAnnualSalary, SalaryRecord::getCurrency)
-                .containsExactly(BigDecimal.valueOf(70_000), "USD");
+        org.assertj.core.api.Assertions.assertThat(history).hasSize(1);
+
+        SalaryRecord record = history.get(0);
+
+        assertThat(record.getAnnualSalary())
+                .isEqualByComparingTo("70000");
+
+        assertThat(record.getCurrency())
+                .isEqualTo("USD");
         org.assertj.core.api.Assertions.assertThat(auditCount).isZero();
     }
 }

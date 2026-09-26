@@ -4,6 +4,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 
 import com.acme.salarymanagement.config.JwtProperties;
 import com.acme.salarymanagement.model.User;
@@ -18,10 +19,9 @@ import javax.crypto.SecretKey;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -63,7 +63,7 @@ class AuthenticationIntegrationTest {
     void successfulLoginReturnsJwt() throws Exception {
         mockMvc.perform(post("/api/auth/login")
                         .contentType("application/json")
-                        .content("""{"email":"hr@example.test","password":"CorrectPassword123!"}"""))
+                        .content("{\"email\":\"hr@example.test\",\"password\":\"CorrectPassword123!\"}"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.accessToken").isNotEmpty())
                 .andExpect(jsonPath("$.tokenType").value("Bearer"))
@@ -74,12 +74,12 @@ class AuthenticationIntegrationTest {
     void invalidPasswordAndUnknownUserReturnUnauthorized() throws Exception {
         mockMvc.perform(post("/api/auth/login")
                         .contentType("application/json")
-                        .content("""{"email":"hr@example.test","password":"wrong"}"""))
+                        .content("{\"email\":\"hr@example.test\",\"password\":\"wrong\"}"))
                 .andExpect(status().isUnauthorized());
 
         mockMvc.perform(post("/api/auth/login")
                         .contentType("application/json")
-                        .content("""{"email":"unknown@example.test","password":"wrong"}"""))
+                        .content("{\"email\":\"unknown@example.test\",\"password\":\"wrong\"}"))
                 .andExpect(status().isUnauthorized());
     }
 
@@ -116,16 +116,17 @@ class AuthenticationIntegrationTest {
     }
 
     @Test
-    @WithMockUser(username = "other@example.test", roles = "USER")
     void authenticatedUserWithoutHrRoleIsForbidden() throws Exception {
-        mockMvc.perform(get("/api/employees"))
+        mockMvc.perform(
+                        get("/api/employees")
+                                .with(user("other@example.test").roles("USER")))
                 .andExpect(status().isForbidden());
     }
 
     private String loginAndGetToken() throws Exception {
         String response = mockMvc.perform(post("/api/auth/login")
                         .contentType("application/json")
-                        .content("""{"email":"hr@example.test","password":"CorrectPassword123!"}"""))
+                        .content("{\"email\":\"hr@example.test\",\"password\":\"CorrectPassword123!\"}"))
                 .andExpect(status().isOk())
                 .andReturn()
                 .getResponse()

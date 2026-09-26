@@ -7,6 +7,7 @@ import java.util.UUID;
 import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.transaction.annotation.Transactional;
 
 public interface SalaryRecordRepository extends JpaRepository<SalaryRecord, UUID> {
 
@@ -15,7 +16,8 @@ public interface SalaryRecordRepository extends JpaRepository<SalaryRecord, UUID
 
     List<SalaryRecord> findByEmployeeIdOrderByEffectiveFromDesc(UUID employeeId);
 
-        @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Transactional(readOnly = true)
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
         List<SalaryRecord> findByEmployeeIdOrderByEffectiveFromAsc(UUID employeeId);
 
     List<SalaryRecord> findByEmployeeIdAndEffectiveFromLessThanEqualOrderByEffectiveFromDesc(
