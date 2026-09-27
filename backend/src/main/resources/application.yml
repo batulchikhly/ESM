@@ -22,7 +22,7 @@ spring:
     time-zone: UTC
 
 server:
-  port: ${PORT:8080}
+  port: ${SERVER_PORT:${PORT:8080}}
 
 management:
   endpoints:
