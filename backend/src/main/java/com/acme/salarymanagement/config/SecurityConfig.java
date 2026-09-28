@@ -58,7 +58,10 @@ public class SecurityConfig {
     @Bean
     CorsConfigurationSource corsConfigurationSource(CorsConfig corsConfig) {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of(corsConfig.allowedOriginValues()));
+        configuration.setAllowedOrigins(List.of(
+                "http://localhost:5173",
+                "https://happy-plant-028132700.4.azurestaticapps.net"
+        ));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("Authorization", "Content-Type", "X-Correlation-Id"));
         configuration.setAllowCredentials(false);
